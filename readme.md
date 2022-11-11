@@ -28,6 +28,8 @@ You can run `main.py` and `display.py` at the same time to visualize the change 
 ## Result
 According to the documentation, the maximum reward an agent get can get is +500 per episode. 
 
+The random policy is the baseline.
+
 <p align="center">
     <img src="Result_CartPole-v1.png" />
 </p>
@@ -64,7 +66,7 @@ In my implementation, after the agent get the `total_reward` better than the pre
 ### GPU
 This project use a relatively small neural network, so I train the agent directly on CPU, you need to add some code to train the agent on GPU if you want to. 
 
-### Save the video record
+### Save the video recording
 Run
 ```
 $ python recorder.py 

@@ -19,6 +19,28 @@ def critic(agent, redo):
                 break
     return total_score
 
+def random_policy(env, episode):
+    total_rewards = []
+    rewards_queue = collections.deque(maxlen=100)
+    avg_rewards = []
+    for _ in range(episode):
+        obs = env.reset()
+        total_reward = 0
+        while True:
+            action = random.choice(range(env.action_space.n))
+            obs, reward, termination, _ = env.step(action)
+            total_reward += reward
+        
+            if termination:
+                break
+        total_rewards.append(total_reward)
+        if len(rewards_queue) >= rewards_queue.maxlen:
+            rewards_queue.popleft()
+        rewards_queue.append(total_reward)
+        avg_rewards.append(mean(rewards_queue))
+
+    return  total_rewards, avg_rewards
+
 
 def main():
 
@@ -28,7 +50,7 @@ def main():
     redo = 10
 
     # training parameters
-    episode = 600
+    episode = 500
     update_step = 20
     step = 0
 
@@ -93,12 +115,15 @@ def main():
                 print('model saved')
             
     
+    random_total_rewards, random_avg_rewards = random_policy(env, episode)
 
 
+    plt.plot(random_total_rewards, label="episodic reward of random policy")
+    plt.plot(random_avg_rewards, label="average reward of last 100 episodes of random policy")
     plt.plot(total_rewards, label="episodic reward")
     plt.plot(avg_rewards, label="average reward of last 100 episodes")
-    plt.ylabel("episodes")
-    plt.xlabel("reward")
+    plt.xlabel("episodes")
+    plt.ylabel("reward")
     plt.legend(loc="upper left")
     plt.title(f'DQN on {env_name}')
     plt.savefig(f'Result_{env_name}')

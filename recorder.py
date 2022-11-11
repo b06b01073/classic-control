@@ -1,7 +1,7 @@
 import gym
 from agent import *
 
-env_name = "CartPole-v1"
+env_name = "LunarLander-v2"
 file_path = f'videos/{env_name}'
 
 
