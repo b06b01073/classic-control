@@ -63,5 +63,13 @@ In my implementation, after the agent get the `total_reward` better than the pre
 
 ### GPU
 This project use a relatively small neural network, so I train the agent directly on CPU, you need to add some code to train the agent on GPU if you want to. 
+
+### Save the video record
+Run
+```
+$ python recorder.py 
+```
+Can save the result in mp4 format.
+
 ## Reference
 1. [Playing Atari with Deep Reinforcement Learning](https://arxiv.org/pdf/1312.5602.pdf?source=post_page)
