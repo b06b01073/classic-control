@@ -4,15 +4,31 @@ import matplotlib.pyplot as plt
 import collections
 from statistics import mean
 
+env_name = 'LunarLander-v2'
+
+def critic(agent, redo):
+    env = gym.make(env_name)
+    total_score = 0
+    for _ in range(redo):
+        obs = env.reset()
+        while True:
+            action = agent.step(obs)
+            obs, reward, termination, _ = env.step(action)
+            total_score += reward
+            if termination:
+                break
+    return total_score
+
 
 def main():
 
     # init env and agent
-    env = gym.make('CartPole-v1')
+    env = gym.make(env_name)
     agent = Agent(action_dim=env.action_space.n, obs_dim=env.observation_space.shape[0])
+    redo = 10
 
     # training parameters
-    episode = 400
+    episode = 600
     update_step = 20
     step = 0
 
@@ -29,6 +45,7 @@ def main():
     # early_stop = 150 # if the model hasn't improve for the previous **early_stop** episodes, we consider the model is not able to improve anymore
     # early_stop_count = 0
     best_episode = float('-inf')
+    candidate_score = float('-inf')
 
 
 
@@ -68,8 +85,12 @@ def main():
 
         # In the case of the cartpole game, since the upper bound of total_reward is 500, it will save the last agent's network which enables the agent to reach the reward of 500.
         if total_reward >= best_episode:
-            best_episode = total_reward
-            torch.save(agent.local_network.state_dict(), 'agent_weights.pth')
+            agent_score = critic(agent, redo)
+            if agent_score > candidate_score:
+                candidate_score = agent_score
+                best_episode = total_reward
+                torch.save(agent.local_network.state_dict(), f'{env_name}_weights.pth')
+                print('model saved')
             
     
 
@@ -79,8 +100,8 @@ def main():
     plt.ylabel("episodes")
     plt.xlabel("reward")
     plt.legend(loc="upper left")
-    plt.title("DQN on cartpole-v1")
-    plt.savefig('rewards')
+    plt.title(f'DQN on {env_name}')
+    plt.savefig(f'Result_{env_name}')
 
 
 if __name__ == '__main__':

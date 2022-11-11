@@ -1,13 +1,15 @@
 import gym
 from agent import *
 
-def main():
-    env = gym.make('CartPole-v1')
-    agent = Agent(env.action_space.n, env.observation_space.shape[0], train_mode=False)
-    agent.local_network.load_state_dict(torch.load('agent_weights.pth'))
-    agent.local_network.eval()
+env_name = 'LunarLander-v2'
 
-    for _ in range(10):
+def main():
+    env = gym.make(env_name)
+
+    while True:
+        agent = Agent(env.action_space.n, env.observation_space.shape[0], train_mode=False)
+        agent.local_network.load_state_dict(torch.load(f'{env_name}_weights.pth'))
+        agent.local_network.eval()
         obs = env.reset()
         total_reward = 0
         while True:
