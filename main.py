@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import collections
 from statistics import mean
 
-env_name = 'LunarLander-v2'
+env_name = 'CartPole-v1'
 
 def critic(agent, redo):
     env = gym.make(env_name)

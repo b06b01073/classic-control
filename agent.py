@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import numpy as np
 
 class Agent():
-    def __init__(self, action_dim, obs_dim, eps=1, gamma=0.99, decay=0.995, eps_low = 0.05, batch_size=128, tau=0.1, train_mode=True):
+    def __init__(self, action_dim, obs_dim, eps=1, gamma=0.99, decay=0.995, eps_low = 0.05, batch_size=128, tau=0.75, train_mode=True):
         self.local_network = DQN(action_dim, obs_dim)
         self.target_network = DQN(action_dim, obs_dim)
         self.target_network.load_state_dict(self.local_network.state_dict())

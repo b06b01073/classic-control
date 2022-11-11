@@ -20,7 +20,7 @@ def main():
             if termination:
                 break
         print(total_reward)
-    env.close()
+
 
 
 if __name__ == '__main__':
