@@ -32,6 +32,11 @@ According to the documentation, the maximum reward an agent get can get is +500 
     <img src="Result_CartPole-v1.png" />
 </p>
 
+<p align="center">
+    <img src="gif/cartpole.gif" />
+</p>
+
+
 Although the noise during the training process is huge, the average reward is growing steadily which shows the agent is learning to do its job quite well.
 
 ## More Details
@@ -42,9 +47,16 @@ Since OpenAI gym built dozens of fantastic environments sharing the same interfa
 Note: You might want to tune some of the hyperparameters(such as `tau`) in the `Agent` class, otherwise the result is not guarenteed to converge.
 
 Down below is the result of `main.py` running in the `LunarLander-v2` environment by simply change the value of `env_name`.
+
 <p align="center">
     <img src="Result_LunarLander-v2.png" />
 </p>
+
+
+<p align="center">
+    <img src="gif/lunarlander.gif" />
+</p>
+
 
 ### How to pick a good agent?
 In my implementation, after the agent get the `total_reward` better than the previous best record `best_episode` it becomes a candidate of the best agent of all time, then, it need to solve the problem `redo` more times to prove it is indeed the best. This method prevent some agents carry an outstanding performance in one episode but disastrous in the other to be considered the best agent and saved by the process.  
