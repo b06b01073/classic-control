@@ -27,7 +27,7 @@ The `display` will run the saved agent 10 times.
 ## Result
 According to the documentation, the maximum reward an agent get can get is +500 per episode. 
 
-![Result]('./rewards.png')
+![Result]('rewards.png')
 
 Although the noise during the training process is huge, the average reward is growing steadily which shows the agent is learning to do its job quite well.
 
