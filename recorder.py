@@ -13,8 +13,8 @@ def main():
     agent.local_network.eval()
     while True:
         action = agent.step(obs)
-        obs, reward, termination, _ = env.step(action)
-        if termination:
+        obs, reward, termination, truncated, _ = env.step(action)
+        if termination or truncated: 
             break
     env.close()
 

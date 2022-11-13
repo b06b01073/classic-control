@@ -3,6 +3,7 @@ from agent import *
 import matplotlib.pyplot as plt
 import collections
 from statistics import mean
+import random
 
 env_name = 'CartPole-v1'
 
@@ -10,12 +11,12 @@ def critic(agent, redo):
     env = gym.make(env_name)
     total_score = 0
     for _ in range(redo):
-        obs = env.reset()
+        obs, _ = env.reset()
         while True:
             action = agent.step(obs)
-            obs, reward, termination, _ = env.step(action)
+            obs, reward, termination, truncated, _ = env.step(action)
             total_score += reward
-            if termination:
+            if termination or truncated:
                 break
     return total_score
 
@@ -28,10 +29,10 @@ def random_policy(env, episode):
         total_reward = 0
         while True:
             action = random.choice(range(env.action_space.n))
-            obs, reward, termination, _ = env.step(action)
+            obs, reward, termination, truncated, _ = env.step(action)
             total_reward += reward
         
-            if termination:
+            if termination or truncated:
                 break
         total_rewards.append(total_reward)
         if len(rewards_queue) >= rewards_queue.maxlen:
@@ -50,7 +51,7 @@ def main():
     redo = 10
 
     # training parameters
-    episode = 500
+    episode = 400
     update_step = 20
     step = 0
 
@@ -72,13 +73,14 @@ def main():
 
 
     for i in range(episode):
-        obs = env.reset()
+        obs, _ = env.reset()
         total_reward = 0
         while True:
             # env.render()
             step += 1
+
             action = agent.step(obs)
-            next_obs, reward, termination, _ = env.step(action)
+            next_obs, reward, termination, truncated, _= env.step(action)
 
             replay_buffer.insert([obs, action, reward, next_obs, termination])
             total_reward += reward
@@ -88,7 +90,7 @@ def main():
 
             agent.train(replay_buffer)
 
-            if termination:
+            if termination or truncated:
                 break
                 
             if step % update_step == 0:
@@ -107,7 +109,9 @@ def main():
 
         # In the case of the cartpole game, since the upper bound of total_reward is 500, it will save the last agent's network which enables the agent to reach the reward of 500.
         if total_reward >= best_episode:
-            agent_score = critic(agent, redo)
+            redo_agent = Agent(action_dim=env.action_space.n, obs_dim=env.observation_space.shape[0], train_mode=False)
+            redo_agent.local_network.load_state_dict(agent.local_network.state_dict())
+            agent_score = critic(redo_agent, redo)
             if agent_score > candidate_score:
                 candidate_score = agent_score
                 best_episode = total_reward

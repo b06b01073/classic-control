@@ -24,6 +24,7 @@ class Agent():
         self.batch_size = batch_size
         self.eps_low = eps_low
 
+
         self.loss_fn = nn.MSELoss()
         self.optim = torch.optim.Adam(self.local_network.parameters(), lr=1e-3)
 
