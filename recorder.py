@@ -1,16 +1,18 @@
 import gym
 from agent import *
-
-env_name = "LunarLander-v2"
-file_path = f'videos/{env_name}'
+import argparse
 
 
-def main():
+# unfortunately gym doesn't support Monitor wrapper anymore, you can downgrade gym version to run this file
+def main(algo, env_name):
+    file_path = f'videos/{env_name}'
     env = gym.wrappers.Monitor(gym.make(env_name), file_path, force=True)
     obs = env.reset()
-    agent = Agent(env.action_space.n, env.observation_space.shape[0], train_mode=False)
-    agent.local_network.load_state_dict(torch.load(f'{env_name}_weights.pth'))
-    agent.local_network.eval()
+    agent = get_agent(algo, env.action_space.n, env.observation_space.shape[0])
+    agent.train_mode = False
+
+    agent.policy_newtork.load_state_dict(torch.load(f'{env_name}_weights.pth'))
+    agent.policy_newtork.eval()
     while True:
         action = agent.step(obs)
         obs, reward, termination, truncated, _ = env.step(action)
@@ -20,4 +22,11 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-a', '--algo', default='DQN')
+    parser.add_argument('-e', '--env', default='CartPole-v1')
+    args = parser.parse_args()
+    algo = args.algo
+    env_name = args.env
+
+    main(algo, env_name)

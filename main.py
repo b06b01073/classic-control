@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 import collections
 from statistics import mean
 import random
+import argparse
 
-env_name = 'CartPole-v1'
+env_name = 'LunarLander-v2'
 
 def critic(agent, redo):
     env = gym.make(env_name)
@@ -43,15 +44,15 @@ def random_policy(env, episode):
     return  total_rewards, avg_rewards
 
 
-def main():
+def main(algo):
 
     # init env and agent
     env = gym.make(env_name)
-    agent = Agent(action_dim=env.action_space.n, obs_dim=env.observation_space.shape[0])
+    agent = get_agent(algo, action_dim=env.action_space.n, obs_dim=env.observation_space.shape[0])
     redo = 10
 
     # training parameters
-    episode = 400
+    episode = 500
     update_step = 20
     step = 0
 
@@ -109,13 +110,13 @@ def main():
 
         # In the case of the cartpole game, since the upper bound of total_reward is 500, it will save the last agent's network which enables the agent to reach the reward of 500.
         if total_reward >= best_episode:
-            redo_agent = Agent(action_dim=env.action_space.n, obs_dim=env.observation_space.shape[0], train_mode=False)
-            redo_agent.local_network.load_state_dict(agent.local_network.state_dict())
+            redo_agent = DDQNAgent(action_dim=env.action_space.n, obs_dim=env.observation_space.shape[0], train_mode=False)
+            redo_agent.policy_newtork.load_state_dict(agent.policy_newtork.state_dict())
             agent_score = critic(redo_agent, redo)
             if agent_score > candidate_score:
                 candidate_score = agent_score
                 best_episode = total_reward
-                torch.save(agent.local_network.state_dict(), f'{env_name}_weights.pth')
+                torch.save(agent.policy_newtork.state_dict(), f'{env_name}_weights.pth')
                 print('model saved')
             
     
@@ -129,9 +130,12 @@ def main():
     plt.xlabel("episodes")
     plt.ylabel("reward")
     plt.legend(loc="upper left")
-    plt.title(f'DQN on {env_name}')
+    plt.title(f'{algo} on {env_name}')
     plt.savefig(f'Result_{env_name}')
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-a', '--algo', default='DQN')
+    args = parser.parse_args()
+    main(args.algo)

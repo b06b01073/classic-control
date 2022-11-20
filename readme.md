@@ -31,7 +31,7 @@ According to the documentation, the maximum reward an agent get can get is +500 
 The random policy is the baseline.
 
 <p align="center">
-    <img src="Result_CartPole-v1.png" />
+    <img src="asset/Result_CartPole-v1.png" />
 </p>
 
 <p align="center">
@@ -51,7 +51,7 @@ Note: You might want to tune some of the hyperparameters(such as `tau`) in the `
 Down below is the result of `main.py` running in the `LunarLander-v2` environment by simply change the value of `env_name`.
 
 <p align="center">
-    <img src="Result_LunarLander-v2.png" />
+    <img src="asset/Result_LunarLander-v2.png" />
 </p>
 
 
