@@ -6,7 +6,6 @@ from statistics import mean
 import random
 import argparse
 
-env_name = 'LunarLander-v2'
 
 def critic(agent, redo):
     env = gym.make(env_name)
@@ -41,10 +40,10 @@ def random_policy(env, episode):
         rewards_queue.append(total_reward)
         avg_rewards.append(mean(rewards_queue))
 
-    return  total_rewards, avg_rewards
+    return total_rewards, avg_rewards
 
 
-def main(algo):
+def main(algo, env_name, episode):
 
     # init env and agent
     env = gym.make(env_name)
@@ -52,7 +51,6 @@ def main(algo):
     redo = 10
 
     # training parameters
-    episode = 500
     update_step = 20
     step = 0
 
@@ -81,7 +79,7 @@ def main(algo):
             step += 1
 
             action = agent.step(obs)
-            next_obs, reward, termination, truncated, _= env.step(action)
+            next_obs, reward, termination, truncated, _ = env.step(action)
 
             replay_buffer.insert([obs, action, reward, next_obs, termination])
             total_reward += reward
@@ -109,14 +107,15 @@ def main(algo):
         avg_rewards.append(mean(rewards_queue))
 
         # In the case of the cartpole game, since the upper bound of total_reward is 500, it will save the last agent's network which enables the agent to reach the reward of 500.
-        if total_reward >= best_episode:
-            redo_agent = DDQNAgent(action_dim=env.action_space.n, obs_dim=env.observation_space.shape[0], train_mode=False)
-            redo_agent.policy_newtork.load_state_dict(agent.policy_newtork.state_dict())
+        if total_reward > best_episode:
+            redo_agent = get_agent(algo, action_dim=env.action_space.n, obs_dim=env.observation_space.shape[0])
+            redo_agent.train_mode = False
+            redo_agent.policy_network.load_state_dict(agent.policy_network.state_dict())
             agent_score = critic(redo_agent, redo)
             if agent_score > candidate_score:
                 candidate_score = agent_score
                 best_episode = total_reward
-                torch.save(agent.policy_newtork.state_dict(), f'{env_name}_weights.pth')
+                torch.save(agent.policy_network.state_dict(), f'{env_name}_weights.pth')
                 print('model saved')
             
     
@@ -137,5 +136,11 @@ def main(algo):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--algo', default='DQN')
+    parser.add_argument('-e', '--env', default='CartPole-v1')
+    parser.add_argument('-ep', '--episode', type=int, default=500)
     args = parser.parse_args()
-    main(args.algo)
+    algo = args.algo
+    episode = args.episode
+    env_name = args.env
+
+    main(algo, env_name, episode)
